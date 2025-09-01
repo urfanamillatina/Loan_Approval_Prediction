@@ -9,7 +9,9 @@ Machine Learning Model which predicts whether the company should approve loan ap
 
 ### Create a New Environment
 
-''''
+'''
 conda create -p ./venv python=3.7 -y
-''''
+'''
+
+### Import libraries
 
