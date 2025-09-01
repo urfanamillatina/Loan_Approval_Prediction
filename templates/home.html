@@ -1,3 +1,323 @@
-<h1>
-Welcome to Loan Approval Prediction!
-</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Loan Approval Predictor</title>
+  <!-- Tailwind via CDN for quick styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="color-scheme" content="light dark" />
+  <style>
+    /* Progressive enhancement if Tailwind fails */
+    .fallback-border { border: 1px solid rgba(0,0,0,.1); border-radius: 1rem; padding: 1rem; }
+  </style>
+</head>
+<body class="min-h-screen bg-gray-50 text-gray-900 antialiased">
+  <main class="max-w-4xl mx-auto p-6">
+    <header class="mb-6">
+      <h1 class="text-3xl font-bold tracking-tight">Loan Approval Predictor</h1>
+      <p class="text-gray-600 mt-2">Fill out the 10 fields below and submit to see the prediction.</p>
+    </header>
+
+    <section class="bg-white rounded-2xl shadow-sm fallback-border p-6">
+      <form id="predict-form" class="grid grid-cols-1 md:grid-cols-2 gap-4" novalidate>
+        <!-- 1. Loan Amount -->
+        <div>
+          <label for="loan_amount" class="block text-sm font-medium">Loan Amount (USD)</label>
+          <input id="loan_amount" name="loan_amount" type="number" min="500" step="100" required placeholder="e.g., 15000" class="mt-1 w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 p-2" />
+          <p class="text-xs text-gray-500 mt-1">Minimum 500. Adjust step as needed.</p>
+        </div>
+
+        <!-- 2. Term -->
+        <div>
+          <label for="term_months" class="block text-sm font-medium">Term (months)</label>
+          <select id="term_months" name="term_months" required class="mt-1 w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 p-2">
+            <option value="" disabled selected>Select a term</option>
+            <option value="36">36</option>
+            <option value="60">60</option>
+          </select>
+        </div>
+
+        <!-- 3. Annual Income -->
+        <div>
+          <label for="annual_income" class="block text-sm font-medium">Annual Income (USD)</label>
+          <input id="annual_income" name="annual_income" type="number" min="0" step="100" required placeholder="e.g., 72000" class="mt-1 w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 p-2" />
+        </div>
+
+        <!-- 4. Employment Length -->
+        <div>
+          <label for="employment_length" class="block text-sm font-medium">Employment Length (years)</label>
+          <select id="employment_length" name="employment_length" required class="mt-1 w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 p-2">
+            <option value="" disabled selected>Select years</option>
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10+</option>
+          </select>
+        </div>
+
+        <!-- 5. Home Ownership -->
+        <div>
+          <label for="home_ownership" class="block text-sm font-medium">Home Ownership</label>
+          <select id="home_ownership" name="home_ownership" required class="mt-1 w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 p-2">
+            <option value="" disabled selected>Select status</option>
+            <option value="RENT">RENT</option>
+            <option value="OWN">OWN</option>
+            <option value="MORTGAGE">MORTGAGE</option>
+            <option value="OTHER">OTHER</option>
+          </select>
+        </div>
+
+        <!-- 6. Purpose -->
+        <div>
+          <label for="purpose" class="block text-sm font-medium">Loan Purpose</label>
+          <select id="purpose" name="purpose" required class="mt-1 w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 p-2">
+            <option value="" disabled selected>Select purpose</option>
+            <option value="debt_consolidation">Debt Consolidation</option>
+            <option value="credit_card">Credit Card</option>
+            <option value="home_improvement">Home Improvement</option>
+            <option value="small_business">Small Business</option>
+            <option value="major_purchase">Major Purchase</option>
+            <option value="car">Car</option>
+            <option value="medical">Medical</option>
+            <option value="moving">Moving</option>
+            <option value="vacation">Vacation</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <!-- 7. DTI -->
+        <div>
+          <label for="dti" class="block text-sm font-medium">Debt-to-Income Ratio (%)</label>
+          <input id="dti" name="dti" type="number" min="0" max="100" step="0.1" required placeholder="e.g., 18.5" class="mt-1 w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 p-2" />
+        </div>
+
+        <!-- 8. Credit Score -->
+        <div>
+          <label for="credit_score" class="block text-sm font-medium">Credit Score</label>
+          <input id="credit_score" name="credit_score" type="number" min="300" max="850" step="1" required placeholder="e.g., 710" class="mt-1 w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 p-2" />
+        </div>
+
+        <!-- 9. Open Accounts -->
+        <div>
+          <label for="open_accounts" class="block text-sm font-medium">Open Credit Lines</label>
+          <input id="open_accounts" name="open_accounts" type="number" min="0" step="1" required placeholder="e.g., 12" class="mt-1 w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 p-2" />
+        </div>
+
+        <!-- 10. Delinquencies -->
+        <div>
+          <label for="delinq_2yrs" class="block text-sm font-medium">Delinquencies (last 2 years)</label>
+          <input id="delinq_2yrs" name="delinq_2yrs" type="number" min="0" step="1" required placeholder="e.g., 0" class="mt-1 w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 p-2" />
+        </div>
+
+        <!-- Submit row (full width) -->
+        <div class="md:col-span-2 mt-2 flex flex-col gap-3">
+          <div class="flex items-center justify-between gap-3">
+            <button type="submit" class="inline-flex items-center justify-center rounded-2xl bg-indigo-600 px-5 py-3 font-semibold text-white shadow hover:bg-indigo-700 focus:outline-none focus-visible:ring-4 focus-visible:ring-indigo-300 disabled:opacity-50">
+              <span id="btn-label">Predict Approval</span>
+              <svg id="spinner" class="hidden ml-2 h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+              </svg>
+            </button>
+
+            <div class="flex items-center gap-2 text-sm">
+              <label for="api_base" class="text-gray-600">API Base URL</label>
+              <input id="api_base" type="url" inputmode="url" placeholder="https://your-domain" class="w-56 rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 p-2" />
+              <span class="text-gray-400" title="Final endpoint is API Base + /predict">/predict</span>
+            </div>
+          </div>
+
+          <p id="helper" class="text-xs text-gray-500">Expected JSON keys (editable in code): <code>loan_amount, term_months, annual_income, employment_length, home_ownership, purpose, dti, credit_score, open_accounts, delinq_2yrs</code>.</p>
+        </div>
+      </form>
+
+      <!-- Result -->
+      <div id="result" class="mt-6 hidden">
+        <div id="result-card" class="rounded-2xl p-5 border border-gray-200">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xl font-semibold">Prediction Result</h2>
+            <span id="timestamp" class="text-xs text-gray-500"></span>
+          </div>
+          <p id="verdict" class="mt-3 text-2xl font-bold"></p>
+          <p id="prob" class="mt-1 text-sm text-gray-600"></p>
+          <pre id="raw" class="mt-4 text-xs bg-gray-50 p-3 rounded-xl overflow-auto"></pre>
+        </div>
+      </div>
+
+      <!-- Error box -->
+      <div id="error" class="mt-6 hidden rounded-2xl border border-red-200 bg-red-50 p-4 text-red-800"></div>
+    </section>
+
+    <footer class="mt-8 text-xs text-gray-500">
+      <p>Tip: If your backend uses different field names or encodings, edit the payload mapping in the script below.</p>
+    </footer>
+  </main>
+
+  <script>
+    const form = document.getElementById('predict-form');
+    const btnLabel = document.getElementById('btn-label');
+    const spinner = document.getElementById('spinner');
+    const resBox = document.getElementById('result');
+    const resCard = document.getElementById('result-card');
+    const verdict = document.getElementById('verdict');
+    const prob = document.getElementById('prob');
+    const raw = document.getElementById('raw');
+    const errorBox = document.getElementById('error');
+    const timestamp = document.getElementById('timestamp');
+    const apiBase = document.getElementById('api_base');
+
+    // Helper: show/hide loading
+    function setLoading(isLoading) {
+      form.querySelector('button[type="submit"]').disabled = isLoading;
+      spinner.classList.toggle('hidden', !isLoading);
+      btnLabel.textContent = isLoading ? 'Predicting…' : 'Predict Approval';
+    }
+
+    // Helper: small confetti when approved
+    function confettiBurst() {
+      const duration = 800;
+      const end = Date.now() + duration;
+      (function frame() {
+        const timeLeft = end - Date.now();
+        const p = document.createElement('span');
+        p.textContent = '🎉';
+        p.style.position = 'fixed';
+        p.style.left = Math.random() * 100 + 'vw';
+        p.style.top = '-10px';
+        p.style.fontSize = (12 + Math.random() * 18) + 'px';
+        p.style.transition = 'transform 1s linear, opacity 1s linear';
+        document.body.appendChild(p);
+        requestAnimationFrame(() => {
+          p.style.transform = 'translateY(110vh) rotate(' + (Math.random()*360) + 'deg)';
+          p.style.opacity = '0';
+        });
+        setTimeout(() => p.remove(), 1000);
+        if (timeLeft > 0) requestAnimationFrame(frame);
+      })();
+    }
+
+    // Map form values to payload expected by your model API
+    function buildPayload(formData) {
+      // Convert to proper types
+      const payload = {
+        loan_amount: Number(formData.get('loan_amount')),
+        term_months: Number(formData.get('term_months')),
+        annual_income: Number(formData.get('annual_income')),
+        employment_length: Number(formData.get('employment_length')),
+        home_ownership: String(formData.get('home_ownership')),
+        purpose: String(formData.get('purpose')),
+        dti: Number(formData.get('dti')),
+        credit_score: Number(formData.get('credit_score')),
+        open_accounts: Number(formData.get('open_accounts')),
+        delinq_2yrs: Number(formData.get('delinq_2yrs')),
+      };
+      return payload;
+    }
+
+    // Interpret various possible backend schemas
+    function parseResponse(json) {
+      // Supported possibilities:
+      // {prediction: 'Approved'|'Rejected', probability: 0.87}
+      // {approved: true|false, prob: 0.87}
+      // {label: 1|0, proba: 0.87}
+      let approved = undefined;
+      let probability = undefined;
+
+      if (typeof json.prediction === 'string') {
+        approved = /approve/i.test(json.prediction);
+      } else if (typeof json.approved === 'boolean') {
+        approved = json.approved;
+      } else if (typeof json.label !== 'undefined') {
+        approved = Number(json.label) === 1;
+      }
+
+      if (typeof json.probability === 'number') probability = json.probability;
+      else if (typeof json.proba === 'number') probability = json.proba;
+      else if (typeof json.score === 'number') probability = json.score;
+
+      return { approved, probability };
+    }
+
+    function showError(message) {
+      errorBox.textContent = message;
+      errorBox.classList.remove('hidden');
+      resBox.classList.add('hidden');
+    }
+
+    function showResult(parsed, rawJson) {
+      errorBox.classList.add('hidden');
+      resBox.classList.remove('hidden');
+      timestamp.textContent = new Date().toLocaleString();
+
+      if (parsed.approved === true) {
+        verdict.textContent = 'Approved ✅';
+        resCard.className = 'rounded-2xl p-5 border border-green-200 bg-green-50';
+        confettiBurst();
+      } else if (parsed.approved === false) {
+        verdict.textContent = 'Not Approved ❌';
+        resCard.className = 'rounded-2xl p-5 border border-red-200 bg-red-50';
+      } else {
+        verdict.textContent = 'Prediction received';
+        resCard.className = 'rounded-2xl p-5 border border-gray-200 bg-gray-50';
+      }
+
+      if (typeof parsed.probability === 'number') {
+        const pct = (parsed.probability * 100).toFixed(1);
+        prob.textContent = `Model confidence: ${pct}%`;
+      } else {
+        prob.textContent = '';
+      }
+
+      raw.textContent = JSON.stringify(rawJson, null, 2);
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      setLoading(true);
+
+      // Front-end validation
+      if (!form.checkValidity()) {
+        setLoading(false);
+        form.reportValidity();
+        return;
+      }
+
+      try {
+        const formData = new FormData(form);
+        const payload = buildPayload(formData);
+
+        const base = (apiBase.value || '').replace(/\/$/, '');
+        const url = base ? `${base}/predict` : '/predict';
+
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        if (!res.ok) {
+          const text = await res.text();
+          throw new Error(`API error ${res.status}: ${text}`);
+        }
+
+        const json = await res.json();
+        const parsed = parseResponse(json);
+        showResult(parsed, json);
+      } catch (err) {
+        console.error(err);
+        showError(err.message || 'Something went wrong.');
+      } finally {
+        setLoading(false);
+      }
+    });
+  </script>
+</body>
+</html>
