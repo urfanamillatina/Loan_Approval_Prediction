@@ -1,0 +1,10 @@
+venv/
+.venv/
+
+# Large datasets
+loan_data_2007_2014.csv
+
+# Jupyter and Python cache
+.ipynb_checkpoints/
+__pycache__/
+*.pyc
