@@ -126,6 +126,11 @@ Blended model is weighted to ensure the best performance
 - Integrate with the Herokuapp to deploy the model
 - Model is ready to be used here: https://loan-approval-prediction-model-f2e70fd9ef88.herokuapp.com/
 
+<p align="center">
+  <img src="./assets/deployment.png" alt="deploymentflow" width="400"/><br/>
+  <em>Deployment Flow and Tools </em>
+</p>
+
 
 
 
